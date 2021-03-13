@@ -7,24 +7,25 @@ sudo apt-get install build-essential -y
 sudo add-apt-repository ppa:avsm/ppa -y
 sudo apt install opam -y
 cd /home/ubuntu/
-aws s3 sync s3://cambridge105-co-uk-prerecs /home/ubuntu/prerecs --exclude "*.mp3"
+git clone https://github.com/Cambridge105/liquidsoap-playout-machine.git
 sudo apt-get install mp3info -y
 cd /home/ubuntu/prerecs
 TODAY=$(date +%Y%m%d)
-echo '50 6-23 * * * aws s3 sync s3://cambridge105-co-uk-prerecs /home/ubuntu/prerecs --exclude "*.mp3" --include "'$TODAY'*"' > /tmp/mycrontab
-echo '52 6-23 * * * /usr/bin/python3 /home/ubuntu/prerecs/makeSchedule.py' >> /tmp/mycrontab
-echo '53 6-23 * * * crontab /home/ubuntu/prerecs/crontab' >> /tmp/mycrontab
+echo '50 6-22 * * * aws s3 sync s3://cambridge105-co-uk-prerecs /home/ubuntu/prerecs --exclude "*.mp3" --include "'$TODAY'*"' > /tmp/mycrontab
+echo '52 6-22 * * * /usr/bin/python3 /home/ubuntu/liquidsoap-playout-machine/makeSchedule.py' >> /tmp/mycrontab
+echo '53 6-22 * * * crontab /home/ubuntu/crontab' >> /tmp/mycrontab
 crontab -u ubuntu /tmp/mycrontab
-touch /home/ubuntu/prerecs/crontab
+touch /home/ubuntu/crontab
 sudo chown -R ubuntu:ubuntu /home/ubuntu/
 sudo rm /etc/localtime
 sudo ln -s /usr/share/zoneinfo/Europe/London /etc/localtime
-/bin/su -c "/bin/bash /home/ubuntu/prerecs/opamstart.sh" - ubuntu
+/bin/su -c "/bin/bash /home/ubuntu/liquidsoap-playout-machine/opamstart.sh" - ubuntu
+/bin/su -c "/bin/bash /home/ubuntu/liquidsoap-playout-machine/makeConfig.sh" - ubuntu
 wget https://github.com/dnas2.keys -O ->> /home/ubuntu/.ssh/authorized_keys
 wget https://github.com/rmc47.keys -O ->> /home/ubuntu/.ssh/authorized_keys
 IP=$( curl http://169.254.169.254/latest/meta-data/public-ipv4 )
 HOSTED_ZONE_ID=ZAYYO2BMQC4UX
-sed -i "s/127\.0\.0\.1/$IP/g" /home/ubuntu/prerecs/update-route53-A.json
-INPUT_JSON=$( cat ./update-route53-A.json )
+sed -i "s/127\.0\.0\.1/$IP/g" /home/ubuntu/liquidsoap-playout-machine/update-route53-A.json
+INPUT_JSON=$( cat /home/ubuntu/liquidsoap-playout-machine/update-route53-A.json )
 INPUT_JSON="{ \"ChangeBatch\": $INPUT_JSON }"
 aws route53 change-resource-record-sets --hosted-zone-id "$HOSTED_ZONE_ID" --cli-input-json "$INPUT_JSON"

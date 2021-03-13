@@ -7,8 +7,8 @@ today = datetime.datetime.today().strftime('%Y%m%d')
 directory = "/home/ubuntu/prerecs/"
 crontab = "SHELL=/bin/sh\nPATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin\n"
 crontab = crontab + "50 6-22 * * * aws s3 sync s3://cambridge105-co-uk-prerecs /home/ubuntu/prerecs --exclude \"*.mp3\" --include \"" + today + "*\" \n"
-crontab = crontab + "52 6-22 * * * /usr/bin/python3 /home/ubuntu/prerecs/makeSchedule.py\n"
-crontab = crontab + "53 6-22 * * * crontab /home/ubuntu/prerecs/crontab\n"
+crontab = crontab + "52 6-22 * * * /usr/bin/python3 /home/ubuntu/liquidsoap-playout-machine/makeSchedule.py\n"
+crontab = crontab + "53 6-22 * * * crontab /home/ubuntu/crontab\n"
 for filename in os.listdir(directory):
     if filename.endswith(".mp3"): 
         filepath = os.path.join(directory, filename)
@@ -60,6 +60,6 @@ for filename in os.listdir(directory):
     else:
         continue
 
-cron = open("/home/ubuntu/prerecs/crontab","w")
+cron = open("/home/ubuntu/crontab","w")
 cron.write(crontab)
 cron.close()
