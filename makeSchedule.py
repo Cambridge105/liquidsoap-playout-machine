@@ -46,6 +46,11 @@ for filename in os.listdir(directory):
         if filedur < 2000:
            maxdur = 1792.0
 
+        if filedur < 2000:
+           if os.path.isfile(directory + fileyear + filemnth + filedate + "_" + filehour + "0000_joined.mp3"):
+               # The hour has two 30 min programmes which are already joined, so we need to schedule that instead of this original file
+               continue		   
+
         # Write the liquidsoap for the file
         ls = "source = once(single(\"" + filepath + "\"))\n"
         ls = ls + "output.icecast(%opus(vbr=\"none\",application=\"audio\",bitrate=256,stereo,signal=\"music\"), host=\"" + config.icehost + "\", port=" + config.iceport + ", password=\"" + config.icepass + "\", mount=\"" + config.icemount + "\", fallible=true, on_stop=shutdown, max_duration(" + str(maxdur) + ",source))\n"
