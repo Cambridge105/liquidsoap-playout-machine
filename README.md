@@ -6,7 +6,7 @@ This repo builds and runs and on-demand playout machine for pre-recorded program
 ## Running in AWS
 An EC2 t3.micro is plenty big enough (we might even get away with a nano...)
 You will need:
-* EC2 instance (we use t3.micro) running Ubuntu 18.04 (20 would probably work but untested). We use AMI ami-06fd78dc2f0b69910 in eu-west-1 
+* EC2 instance (we use t3.micro) running Ubuntu 20.04. We use AMI ami-08bac620dc84221eb in eu-west-1 
 * S3 bucket containing the pre-recorded material, with object keys following the format yyyymmdd_hhmm_programme-title.mp3 , where the timestamp is the playout timestamp
 * Route53 record to be updated with the instance IP address
 * Settings for the target icecast endpoint stored in SSM Parameter Store, with the mountpoint and password as KMS-encrypted secure strings
