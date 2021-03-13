@@ -6,7 +6,8 @@ import config
 today = datetime.datetime.today().strftime('%Y%m%d')
 directory = "/home/ubuntu/prerecs/"
 crontab = "SHELL=/bin/sh\nPATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin\n"
-crontab = crontab + "50 6-22 * * * aws s3 sync s3://cambridge105-co-uk-prerecs /home/ubuntu/prerecs --exclude \"*.mp3\" --include \"" + today + "*\" \n"
+crontab = crontab + "48 6-22 * * * aws s3 sync s3://cambridge105-co-uk-prerecs /home/ubuntu/prerecs --exclude \"*.mp3\" --include \"" + today + "*\" \n"
+crontab = crontab + "50 6-22 * * * /usr/bin/python3 /home/ubuntu/liquidsoap-playout-machine/join30MinFiles.py\n"
 crontab = crontab + "52 6-22 * * * /usr/bin/python3 /home/ubuntu/liquidsoap-playout-machine/makeSchedule.py\n"
 crontab = crontab + "53 6-22 * * * crontab /home/ubuntu/crontab\n"
 for filename in os.listdir(directory):

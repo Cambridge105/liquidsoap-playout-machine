@@ -12,7 +12,8 @@ sudo apt-get install mp3info -y
 sudo apt-get install ffmpeg -y
 cd /home/ubuntu/prerecs
 TODAY=$(date +%Y%m%d)
-echo '50 6-22 * * * aws s3 sync s3://cambridge105-co-uk-prerecs /home/ubuntu/prerecs --exclude "*.mp3" --include "'$TODAY'*"' > /tmp/mycrontab
+echo '48 6-22 * * * aws s3 sync s3://cambridge105-co-uk-prerecs /home/ubuntu/prerecs --exclude "*.mp3" --include "'$TODAY'*"' > /tmp/mycrontab
+echo '50 6-22 * * * /usr/bin/python3 /home/ubuntu/liquidsoap-playout-machine/join30MinFiles.py' >> /tmp/mycrontab
 echo '52 6-22 * * * /usr/bin/python3 /home/ubuntu/liquidsoap-playout-machine/makeSchedule.py' >> /tmp/mycrontab
 echo '53 6-22 * * * crontab /home/ubuntu/crontab' >> /tmp/mycrontab
 crontab -u ubuntu /tmp/mycrontab
