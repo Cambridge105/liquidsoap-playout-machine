@@ -47,15 +47,17 @@ for filename in os.listdir(directory):
            maxdur = 1792.0
 
         # Write the liquidsoap for the file
-        ls = "output.icecast(%vorbis, host=\"" + config.icehost + "\", port=" + config.iceport + ", password=\"" + config.icepass + "\", mount=\"" + config.icemount + "\", fallible=true, on_stop=shutdown, max_duration(" + str(maxdur) + ",once(single(\"" + filepath + "\"))))"
-        ls = "#!/bin/bash\n\nliquidsoap '" + ls + "'"
-        lsfile = open("/home/ubuntu/prerecs/" + filename + ".sh","w")
+		ls = "source = once(single(\"" + filepath + "\"))))\n"
+		ls = ls + "output.dummy(%ogg, fallible=true, max_duration(" + str(maxdur) + ",source)\n"
+		ls = ls + "output.icecast(%vorbis, host=\"" + config.icehost + "\", port=" + config.iceport + ", password=\"" + config.icepass + "\", mount=\"" + config.icemount + "\", fallible=true, on_stop=shutdown, max_duration(" + str(maxdur) + ",source))"
+		
+        lsfile = open("/home/ubuntu/prerecs/" + filename + ".liq","w")
         lsfile.write(ls)
         lsfile.close()
-        st = os.stat("/home/ubuntu/prerecs/" + filename + ".sh")
-        os.chmod("/home/ubuntu/prerecs/" + filename + ".sh", st.st_mode | stat.S_IEXEC)
+        st = os.stat("/home/ubuntu/prerecs/" + filename + ".liq")
+        os.chmod("/home/ubuntu/prerecs/" + filename + ".liq", st.st_mode | stat.S_IEXEC)
 
-        crontab = crontab + cronexp + "(. ~/.bash_profile; /bin/bash /home/ubuntu/prerecs/" + filename + ".sh)\n"
+        crontab = crontab + cronexp + "(. ~/.bash_profile; /home/ubuntu/.opam/default/bin/liquidsoap /home/ubuntu/prerecs/" + filename + ".liq)\n"
         continue
     else:
         continue
