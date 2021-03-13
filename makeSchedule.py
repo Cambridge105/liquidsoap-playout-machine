@@ -47,7 +47,7 @@ for filename in os.listdir(directory):
            maxdur = 1792.0
 
         if filedur < 2000:
-           if os.path.isfile(directory + fileyear + filemnth + filedate + "_" + filehour + "0000_joined.mp3"):
+           if os.path.isfile(directory + fileyear + filemnth + filedate + "_" + filehour + "00_joined.mp3"):
                # The hour has two 30 min programmes which are already joined, so we need to schedule that instead of this original file
                continue		   
 
