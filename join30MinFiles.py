@@ -45,7 +45,7 @@ for filename in os.listdir(directory):
 
                 # Need to truncate the first file to 30 mins
                 outputfile = filepath.replace(".mp3","-trimmed.mp3")
-                os.system("ffmpeg -ss 00:00:00 -t 00:30:00 -i " + filepath + " " + outputfile)
+                os.system("ffmpeg -ss 00:00:00 -t 00:30:00 -i " + filepath + " acodec copy " + outputfile)
                 #Now concatenate first file to second
                 os.system("echo \"file '" + outputfile + "'\nfile '" + secondfile + "'\" > /home/ubuntu/filelist.txt")
                 os.system("ffmpeg -f concat -safe 0 -i /home/ubuntu/filelist.txt -c copy " + directory + fileyear + filemnth + filedate + "_" + filehour + "00_joined.mp3")
