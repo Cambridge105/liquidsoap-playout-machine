@@ -48,7 +48,8 @@ for filename in os.listdir(directory):
 
         # Write the liquidsoap for the file
         ls = "source = once(single(\"" + filepath + "\"))\n"
-        ls = ls + "output.icecast(%opus((vbr=\"unconstrained\",application=\"audio\",bitrate=256,stereo,signal=\"music\"), host=\"" + config.icehost + "\", port=" + config.iceport + ", password=\"" + config.icepass + "\", mount=\"" + config.icemount + "\", fallible=true, on_stop=shutdown, max_duration(" + str(maxdur) + ",source))"
+        ls = ls + "output.icecast(%opus(vbr=\"none\",application=\"audio\",bitrate=256,stereo,signal=\"music\"), host=\"" + config.icehost + "\", port=" + config.iceport + ", password=\"" + config.icepass + "\", mount=\"" + config.icemount + "\", fallible=true, on_stop=shutdown, max_duration(" + str(maxdur) + ",source))\n"
+        ls = ls + "output.dummy(blank())"
 
         lsfile = open("/home/ubuntu/prerecs/" + filename + ".liq","w")
         lsfile.write(ls)
