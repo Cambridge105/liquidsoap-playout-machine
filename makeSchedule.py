@@ -5,11 +5,6 @@ import config
 
 today = datetime.datetime.today().strftime('%Y%m%d')
 directory = "/home/ubuntu/prerecs/"
-crontab = "SHELL=/bin/sh\nPATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin\n"
-crontab = crontab + "48 6-22 * * * aws s3 sync s3://cambridge105-co-uk-prerecs /home/ubuntu/prerecs --exclude \"*.mp3\" --include \"" + today + "*\" \n"
-crontab = crontab + "50 6-22 * * * /usr/bin/python3 /home/ubuntu/liquidsoap-playout-machine/join30MinFiles.py\n"
-crontab = crontab + "52 6-22 * * * /usr/bin/python3 /home/ubuntu/liquidsoap-playout-machine/makeSchedule.py\n"
-crontab = crontab + "53 6-22 * * * crontab /home/ubuntu/crontab\n"
 for filename in os.listdir(directory):
     if filename.endswith(".mp3"): 
         filepath = os.path.join(directory, filename)
@@ -22,6 +17,7 @@ for filename in os.listdir(directory):
         fileplay = datetime.datetime(int(fileyear),int(filemnth),int(filedate),int(filehour),int(filemins))
         if fileplay < datetime.datetime.now():
           continue
+        
         cronexp = filemins + " " + filehour + " " + filedate + " " + filemnth + " * "
 
         # What is the file duration?
@@ -63,11 +59,26 @@ for filename in os.listdir(directory):
         st = os.stat("/home/ubuntu/prerecs/" + filename + ".liq")
         os.chmod("/home/ubuntu/prerecs/" + filename + ".liq", st.st_mode | stat.S_IEXEC)
 
-        crontab = crontab + cronexp + "(. ~/.bash_profile; /home/ubuntu/.opam/default/bin/liquidsoap /home/ubuntu/prerecs/" + filename + ".liq)\n"
+        systemd_timer = "[Unit]\nDescription=Playout for " + filename + "\n\n[Timer]OnCalendar=" + fileyear + "-" + filemnth + "-" + filedate + " " + filehour + ":" + filemins + ":00\nPersistent=false\nAccuracySec=100ms\n\n[Install]\nWantedBy=timers.target"
+        systemd_timer_file = open("/home/ubuntu/playout" + filedate + filehour + filemins + ".timer")
+        systemd_timer_file.write(systemd_timer)
+        systemd_timer_file.close()
+        os.system("sudo mv /home/ubuntu/playout" + filedate + filehour + filemins + ".timer /etc/systemd/system/playout" + filedate + filehour + filemins + ".timer")
+        
+        command = "/usr/bin/bash ~/.bash_profile; /home/ubuntu/.opam/default/bin/liquidsoap /home/ubuntu/prerecs/" + filename + ".liq"
+        systemd_service = "[Unit]\nDescription=Playout for " + filename + "\n\n[Service]\nType=oneshot\nExecStart=" + command + "\nUser=ubuntu\nGroup=ubuntu"
+        systemd_service_file = open("/home/ubuntu/playout" + filedate + filehour + filemins + ".service")
+        systemd_service_file.write(systemd_service)
+        systemd_service_file.close()
+        os.system("sudo mv /home/ubuntu/playout" + filedate + filehour + filemins + ".service /etc/systemd/system/playout" + filedate + filehour + filemins + ".service")
+        
+        
+        os.system("sudo systemctl daemon-reload")
+        os.system("sudo systemctl start playout" + filedate + filehour + filemins + ".timer")
+
+
         continue
     else:
         continue
 
-cron = open("/home/ubuntu/crontab","w")
-cron.write(crontab)
-cron.close()
+
