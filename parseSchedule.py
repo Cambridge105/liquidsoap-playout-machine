@@ -20,18 +20,18 @@ def main():
     # The file token.json stores the user's access and refresh tokens, and is
     # created automatically when the authorization flow completes for the first
     # time.
-    if os.path.exists('token.json'):
-        creds = Credentials.from_authorized_user_file('token.json', SCOPES)
+    if os.path.exists('/home/ubuntu/liquidsoap-playout-machine/token.json'):
+        creds = Credentials.from_authorized_user_file('/home/ubuntu/liquidsoap-playout-machine/token.json', SCOPES)
     # If there are no (valid) credentials available, let the user log in.
     if not creds or not creds.valid:
         if creds and creds.expired and creds.refresh_token:
             creds.refresh(Request())
         else:
             flow = InstalledAppFlow.from_client_secrets_file(
-                'credentials.json', SCOPES)
+                '/home/ubuntu/liquidsoap-playout-machine/credentials.json', SCOPES)
             creds = flow.run_local_server(port=0)
         # Save the credentials for the next run
-        with open('token.json', 'w') as token:
+        with open('/home/ubuntu/liquidsoap-playout-machine/token.json', 'w') as token:
             token.write(creds.to_json())
 
     service = build('calendar', 'v3', credentials=creds)
@@ -61,10 +61,12 @@ def main():
     cron.write(schedule_content)
     cron.close()
 
-    token_file = open("/home/ubuntu/token.json","r")
+    token_file = open("/home/ubuntu/liquidsoap-playout-machine/token.json","r")
     mytoken = token_file.read()
+    mytoken = mytoken.replace('"','\\"')
+
     token_file.close()
-    os.system("aws ssm put-parameter --names \"/c105-icecast/gcal-token\" --value " + mytoken + " --type \"SecureString\" --overwrite ")
+    os.system("aws ssm put-parameter --region \"eu-west-1\" --name \"/c105-icecast/gcal-token\" --value \"" + mytoken + "\" --type \"SecureString\" --overwrite ")
 
 
 if __name__ == '__main__':
