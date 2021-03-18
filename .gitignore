@@ -129,3 +129,6 @@ dmypy.json
 .pyre/
 
 config.py
+token.json
+credentials.json
+schedule.csv
