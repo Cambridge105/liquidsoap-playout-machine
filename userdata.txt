@@ -10,6 +10,7 @@ cd /home/ubuntu/
 git clone https://github.com/Cambridge105/liquidsoap-playout-machine.git
 sudo apt-get install mp3info -y
 sudo apt-get install ffmpeg -y
+sudo apt install python3-pip -y
 cd /home/ubuntu/prerecs
 TODAY=$(date +%Y%m%d)
 echo '48 6-22 * * * aws s3 sync s3://cambridge105-co-uk-prerecs /home/ubuntu/prerecs --exclude "*.mp3" --include "'$TODAY'*"' > /tmp/mycrontab
@@ -31,3 +32,4 @@ sed -i "s/127\.0\.0\.1/$IP/g" /home/ubuntu/liquidsoap-playout-machine/update-rou
 INPUT_JSON=$( cat /home/ubuntu/liquidsoap-playout-machine/update-route53-A.json )
 INPUT_JSON="{ \"ChangeBatch\": $INPUT_JSON }"
 aws route53 change-resource-record-sets --hosted-zone-id "$HOSTED_ZONE_ID" --cli-input-json "$INPUT_JSON"
+pip3 install --upgrade google-api-python-client google-auth-httplib2 google-auth-oauthlib
