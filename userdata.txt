@@ -33,3 +33,5 @@ INPUT_JSON=$( cat /home/ubuntu/liquidsoap-playout-machine/update-route53-A.json 
 INPUT_JSON="{ \"ChangeBatch\": $INPUT_JSON }"
 aws route53 change-resource-record-sets --hosted-zone-id "$HOSTED_ZONE_ID" --cli-input-json "$INPUT_JSON"
 pip3 install --upgrade google-api-python-client google-auth-httplib2 google-auth-oauthlib
+aws ssm get-parameters --region "eu-west-1" --names "/c105-icecast/gcal-credentials" --output text  --query "Parameters[*].{Value:Value}" > /home/ubuntu/liquidsoap-playout-machine/credentials.json
+aws ssm get-parameters --region "eu-west-1" --names "/c105-icecast/gcal-token" --with-decryption --output text  --query "Parameters[*].{Value:Value}" > /home/ubuntu/liquidsoap-playout-machine/token.json

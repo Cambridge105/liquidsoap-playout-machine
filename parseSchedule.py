@@ -1,6 +1,6 @@
 from __future__ import print_function
 import datetime
-import os.path
+import os
 from googleapiclient.discovery import build
 from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
@@ -60,6 +60,11 @@ def main():
     cron = open("/home/ubuntu/schedule.csv","w")
     cron.write(schedule_content)
     cron.close()
+
+    token_file = open("/home/ubuntu/token.json","r")
+    mytoken = token_file.read()
+    token_file.close()
+    os.system("aws ssm put-parameter --names \"/c105-icecast/gcal-token\" --value " + mytoken + " --type \"SecureString\" --overwrite ")
 
 
 if __name__ == '__main__':
