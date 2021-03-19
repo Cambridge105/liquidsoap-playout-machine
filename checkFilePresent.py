@@ -8,7 +8,7 @@ from botocore.config import Config
 
 my_config = Config(region_name='eu-west-1')
 
-f = open("schedule.csv","r")
+f = open("/home/ubuntu/schedule.csv","r")
 schedule = f.read()
 f.close()
 
@@ -22,7 +22,7 @@ programmes = schedule.splitlines()
 for programme in programmes:
     programInfo = programme.split(",")
     if programInfo[0] == '"' + nextHourISO + '"':
-        fileToCheck = 'prerecs/' + programInfo[3].replace('"','')
+        fileToCheck = 'home/ubuntu/prerecs/' + programInfo[3].replace('"','')
         print(fileToCheck)
  
         if len(fileToCheck) > 1:
