@@ -13,14 +13,14 @@ To run this machine, you will need to configure the following as well as the scr
 - Settings for the target icecast endpoint stored in SSM Parameter Store, with the mountpoint and password as KMS-encrypted secure strings
 - Google Calendar API credentials and token files stored in SSM Parameter Store. The token file is a SecureString. 
 - IAM role granting access to S3, Route53, SSM and KMS - see below
-- Launch Configuration containing the machine type, security group, IAM role, and the userdata.txt file from this repo added manually
-- Auto-Scaling group set to a normal minimum/maximum/desired of 0 instances, pointing to the Launch Configuration
+- Launch Template containing the machine type, security group, IAM role, and the userdata.txt file from this repo added manually
+- Auto-Scaling group set to a normal minimum/maximum/desired of 0 instances, pointing to the Launch Template
 - Schedule on the Auto-Scaling Group, to increase/decrease the ASG desired and minimum sizes when needed (currently done manually, outside the scope of this repo)
 
 ![Architecture diagram](https://github.com/Cambridge105/liquidsoap-playout-machine/blob/main/playout.png?raw=true)
 
 ## Machine setup
-The following tasks are performed by userdata.txt which should be part of the launch configuration. This runs automatically when the EC2 instance is created.
+The following tasks are performed by userdata.txt which should be part of the Launch Template. This runs automatically when the EC2 instance is created.
 1. Installs required packages, including by running *opamstart.sh*  (See the Code Structure section, below)
 2. Clones this repo
 3. Gets the credentials and details of the studio stream from Parameter Store and writes them into the config.py file
@@ -29,7 +29,7 @@ The following tasks are performed by userdata.txt which should be part of the la
    - run the join30MinFiles.py and checkFilePresent.py scripts (See the Code Structure section, below)
    - then run the makeSchedule.py script (See the Code Structure section, below)
 5. Ensures the machine's timezone is set to UK local time, respecting any DST offset
-6. Adds all of Rob's and my public keys from GitHub, in addition to the key specified in the Launch Configuration, so either of us can access the machine - Anyone else using this repo will need to add their own public keys instead!
+6. Adds all of Rob's and my public keys from GitHub, in addition to the key specified in the Launch Template, so either of us can access the machine - Anyone else using this repo will need to add their own public keys instead!
 7. Updates DNS with the machine's public IP
 8. Gets the credentials to access the schedule Google Calendar from the Parameter Store and writes them to files
 9. Runs parseSchedule.py (See the Code Structure section, below)
@@ -53,7 +53,7 @@ Be aware that *makeSchedule.py* will disconnect from the Icecast server at the e
 Note on timers: Be aware that the hourly jobs created by *userdata.txt* are cron jobs as they can have best-effort timing. Programmes scheduled by *makeSchedule.py* use systemctl timers with 100 millisecond accuracy. 
 
 ## IAM role policy 
-The EC2 instance created by the Launch Configuration must have an IAM Role attached, with a Policy granting access to the following (obviously restrict the Resources as required):
+The EC2 instance created by the Launch Template must have an IAM Role attached, with a Policy granting access to the following (obviously restrict the Resources as required):
 - kms:Encrypt (needed because *parseSchedule.py* has to write back the Google Calendar access token as a SecureString to Parameter Store, in case the OAuth Refresh Token has updated)
 - kms:Decrypt (needed to decrypt the SecureStrings from Parameter Store, containing the secrets for Icecast and the Google Calendar credentials)
 - route53:ChangeResourceRecordSets (needed to update DNS with the public IP of the EC2 instance each time it is launched)
@@ -68,7 +68,7 @@ The EC2 instance created by the Launch Configuration must have an IAM Role attac
 AWS costs for running this infrastructure should be very small, but obviosuly if anyone else uses this code, cost optimisation is their responsibility. The following costs are expected:
 - S3 Standard Storage for pre-recorded files (in our case this is around 25GB/month). There are no data transfer costs associated with S3 as we only transfer into S3 and to an EC2 machine in the same region.
 - S3 lifecycle policy - negligible
-- EC2 on-demand costs - this is optimised as much as possible by only running the instance when required to play a pre-record. Auto-Scaling is free. 
+- EC2 on-demand costs - this is optimised as much as possible by only running the instance when required to play a pre-record. Auto-Scaling and Launch Template are free. 
 - AWS Parameter Store is free for standard parameters, but there are negligble KMS costs for encryption/decryption of the secure strings
 - Route53 - assuming you already have a Hosted Zone to use, the record should be free and DNS queries negligible cost
 
