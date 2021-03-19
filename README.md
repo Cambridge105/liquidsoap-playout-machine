@@ -65,10 +65,11 @@ The EC2 instance created by the Launch Template must have an IAM Role attached, 
 - s3:ListBucket (needed to get the listing of pre-recorded files in case *checkFilePresent.py* needs to find an older edition)
 
 ## Costs
-AWS costs for running this infrastructure should be very small, but obviosuly if anyone else uses this code, cost optimisation is their responsibility. The following costs are expected:
+AWS costs for running this infrastructure should be very small, but obviously if anyone else uses this code, cost optimisation is their responsibility. The following costs are expected:
 - S3 Standard Storage for pre-recorded files (in our case this is around 25GB/month). There are no data transfer costs associated with S3 as we only transfer into S3 and to an EC2 machine in the same region.
 - S3 lifecycle policy - negligible
 - EC2 on-demand costs - this is optimised as much as possible by only running the instance when required to play a pre-record. Auto-Scaling and Launch Template are free. 
+- EC2 Data Transfer out - negligible costs for streaming the audio over the internet back to the studio
 - AWS Parameter Store is free for standard parameters, but there are negligble KMS costs for encryption/decryption of the secure strings
 - Route53 - assuming you already have a Hosted Zone to use, the record should be free and DNS queries negligible cost
 
