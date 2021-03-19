@@ -8,7 +8,7 @@ As written, the playout machine is designed to run in AWS EC2, with the machine 
 To run this machine, you will need to configure the following as well as the scripts in this repo (maybe one day I'll Terraform this but for now we've used the AWS console...):
  
 - EC2 instance (we use t3.micro, but t3.nano may suffice) running Ubuntu 20.04. We use AMI ami-08bac620dc84221eb in eu-west-1 (This is created as part of an Auto-Scaling Group as described below)
-- S3 bucket containing the pre-recorded material, with object keys following the format yyyymmdd_hhmm_programme-title.mp3 , where the timestamp is the desired playout time
+- S3 bucket containing the pre-recorded material, with object keys following the format yyyymmdd_hhmm_programme-title.mp3 , where the timestamp is the desired playout time. It is recommended to have a lifecycle policy on this to stop it growing and costing money unnecessarily. We delete programmes after 30 days (other copies are kept longer elsewhere).
 - Route53 record in a hosted zone, to be updated with the instance IP address
 - Settings for the target icecast endpoint stored in SSM Parameter Store, with the mountpoint and password as KMS-encrypted secure strings
 - Google Calendar API credentials and token files stored in SSM Parameter Store. The token file is a SecureString. 
@@ -59,3 +59,12 @@ The EC2 instance created by the Launch Configuration must have an IAM Role attac
 - ssm:PutParameter (needed to update the OAuth refresh token from Google Calendar's API)
 - s3:GetObject (needed to get the pre recorded files from S3)
 - s3:ListBucket (needed to get the listing of pre-recorded files in case *checkFilePresent.py* needs to find an older edition)
+
+## Costs
+AWS costs for running this infrastructure should be very small, but obviosuly if anyone else uses this code, cost optimisation is their responsibility. The following costs are expected:
+- S3 Standard Storage for pre-recorded files (in our case this is around 25GB/month). There are no data transfer costs associated with S3 as we only transfer into S3 and to an EC2 machine in the same region.
+- S3 lifecycle policy - negligible
+- EC2 on-demand costs - this is optimised as much as possible by only running the instance when required to play a pre-record. Auto-Scaling is free. 
+- AWS Parameter Store is free for standard parameters, but there are negligble KMS costs for encryption/decryption of the secure strings
+- Route53 - assuming you already have a Hosted Zone to use, the record should be free and DNS queries negligible cost
+My rough back-of-envelope calculation suggests this is a maximum of about $6/month in our use-case.
