@@ -34,6 +34,8 @@ The following tasks are performed by userdata.txt which should be part of the la
 8. Gets the credentials to access the schedule Google Calendar from the Parameter Store and writes them to files
 9. Runs parseSchedule.py (See the Code Structure section, below)
 
+The Auto-Scaling Group needs to be scheduled to start the instance in sufficient time to do all these userdata tasks before the first run of the cronjobs it creates. In our case, for a pre-record starting at 14:00, and therefore needing the cron jobs to start at 13:48, we start the instance at 13:25. The instance is stopped 5 minutes after the last pre-record finshes.
+
 ## Code structure
 The code is formed of a number of scripts:
 
@@ -45,6 +47,8 @@ The code is formed of a number of scripts:
  - *parseSchedule.py* - This is run at boot. It connects to Google Calendar to download the schedule, using credentials which are also fetched during boot. It writes *schedule.csv*, which contains recorded programmes scheduled today and tomorrow. This schedule information is used by *checkFilePresent.py*
  - *update-route53-A.json* - This is a template config script used to update DNS with the machine's public IP at boot.
  - *userdata.txt* - This contains the machine setup and configuration and is designed to be used as part of a launch template in AWS. 
+
+Be aware that *makeSchedule.py* will disconnect from the Icecast server at the end of every programme and then reconnect if there is a programme following it, rather than maintaining the connection with silence. This is deliberate, since it means we do not need to have all the files in S3 before we start several back-to-back pre-records. In our case, a TOTH sequence and news bulletin run from xx:58:30 to xx:02:00, so we disconnect at xx:58:45 (forced by the maxduration in *makeSchedule.py*) and then reconnect at xx:00:00. The TOTH sequence has precidence in the streamer's Liquidsoap rules, so this is imperceptible to the listener. 
 
 Note on timers: Be aware that the hourly jobs created by *userdata.txt* are cron jobs as they can have best-effort timing. Programmes scheduled by *makeSchedule.py* use systemctl timers with 100 millisecond accuracy. 
 
