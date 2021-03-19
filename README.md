@@ -1,5 +1,5 @@
 # liquidsoap-playout-machine
-LiquidSOAP-based playout system for pre-recorded programmes
+[Liquidsoap](https://www.liquidsoap.info/)-based playout system for pre-recorded programmes
 
 This repo builds and runs and on-demand playout machine for pre-recorded programmes. The code is designed to spin up the machine only when needed, then destroy it at the end of a period of recorded programmes.
 
