@@ -14,7 +14,7 @@ To run this machine, you will need to configure the following as well as the scr
 - Google Calendar API credentials and token files stored in SSM Parameter Store. The token file is a SecureString. 
 - IAM role granting access to S3, Route53, SSM and KMS - see below
 - Launch Configuration containing the machine type, security group, IAM role, and the userdata.txt file from this repo added manually
-- Auto-Scaling group set to a normal minimum/maximum/desired of 0 instances, pointing to the Llaunch Configuration
+- Auto-Scaling group set to a normal minimum/maximum/desired of 0 instances, pointing to the Launch Configuration
 - Schedule on the Auto-Scaling Group, to increase/decrease the ASG desired and minimum sizes when needed (currently done manually, outside the scope of this repo)
 
 ![Architecture diagram](https://github.com/Cambridge105/liquidsoap-playout-machine/blob/main/playout.png?raw=true)
@@ -29,7 +29,7 @@ The following tasks are performed by userdata.txt which should be part of the la
    - run the join30MinFiles.py and checkFilePresent.py scripts (See the Code Structure section, below)
    - then run the makeSchedule.py script (See the Code Structure section, below)
 5. Ensures the machine's timezone is set to UK local time, respecting any DST offset
-6. Adds all of Rob's and my public keys from GitHub, in addition to the key specified in the Launch Configuration, so either of us can access the machine - Anyone else using this repo will need to user their own keys instead!
+6. Adds all of Rob's and my public keys from GitHub, in addition to the key specified in the Launch Configuration, so either of us can access the machine - Anyone else using this repo will need to add their own public keys instead!
 7. Updates DNS with the machine's public IP
 8. Gets the credentials to access the schedule Google Calendar from the Parameter Store and writes them to files
 9. Runs parseSchedule.py (See the Code Structure section, below)
@@ -46,7 +46,7 @@ The code is formed of a number of scripts:
  - *update-route53-A.json* - This is a template config script used to update DNS with the machine's public IP at boot.
  - *userdata.txt* - This contains the machine setup and configuration and is designed to be used as part of a launch template in AWS. 
 
-Note on timers: Be aware that the hourly jobs created by userdata.txt are cron jobs as they can have best-effort timing. Programmes scheduled by makeSchedule.py use systemctl timers with 100 millisecond accuracy. 
+Note on timers: Be aware that the hourly jobs created by *userdata.txt* are cron jobs as they can have best-effort timing. Programmes scheduled by *makeSchedule.py* use systemctl timers with 100 millisecond accuracy. 
 
 ## IAM role policy 
 The EC2 instance created by the Launch Configuration must have an IAM Role attached, with a Policy granting access to the following (obviously restrict the Resources as required):
