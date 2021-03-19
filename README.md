@@ -67,4 +67,5 @@ AWS costs for running this infrastructure should be very small, but obviosuly if
 - EC2 on-demand costs - this is optimised as much as possible by only running the instance when required to play a pre-record. Auto-Scaling is free. 
 - AWS Parameter Store is free for standard parameters, but there are negligble KMS costs for encryption/decryption of the secure strings
 - Route53 - assuming you already have a Hosted Zone to use, the record should be free and DNS queries negligible cost
+
 My rough back-of-envelope calculation suggests this is a maximum of about $6/month in our use-case.
