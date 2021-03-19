@@ -7,17 +7,32 @@ This repo builds and runs and on-demand playout machine for pre-recorded program
 As written, the playout machine is designed to run in AWS EC2, with the machine starting and stopping whenever a recorded programme is required. While most of the code should also be fine with an on-site server, and I've deliberately avoided using DynamoDB databases, for example, some rewriting will be necessary.
 To run this machine, you will need to configure the following as well as the scripts in this repo (maybe one day I'll Terraform this but for now we've used the AWS console...):
  
-- EC2 instance (we use t3.micro, but t3.nano may suffice) running Ubuntu 20.04. We use AMI ami-08bac620dc84221eb in eu-west-1 
+- EC2 instance (we use t3.micro, but t3.nano may suffice) running Ubuntu 20.04. We use AMI ami-08bac620dc84221eb in eu-west-1 (This is created as part of an Auto-Scaling Group as described below)
 - S3 bucket containing the pre-recorded material, with object keys following the format yyyymmdd_hhmm_programme-title.mp3 , where the timestamp is the desired playout time
 - Route53 record in a hosted zone, to be updated with the instance IP address
 - Settings for the target icecast endpoint stored in SSM Parameter Store, with the mountpoint and password as KMS-encrypted secure strings
 - Google Calendar API credentials and token files stored in SSM Parameter Store. The token file is a SecureString. 
-- IAM role granting access to S3, Route53, SSM and KMS decryption
-- Launch configuration containing the machine type, IAM role, and the userdata.txt file from this repo added manually
-- Auto-Scaling group set to a normal minimum/maximum/desired of 0 instances, pointing to the launch configuration
-- Schedule on the Auto-Scaling group, to increase/decrease the ASG desired and minimum sizes when needed (currently done manually, outside the scope of this repo)
+- IAM role granting access to S3, Route53, SSM and KMS - see below
+- Launch Configuration containing the machine type, security group, IAM role, and the userdata.txt file from this repo added manually
+- Auto-Scaling group set to a normal minimum/maximum/desired of 0 instances, pointing to the Llaunch Configuration
+- Schedule on the Auto-Scaling Group, to increase/decrease the ASG desired and minimum sizes when needed (currently done manually, outside the scope of this repo)
 
 ![Architecture diagram](https://github.com/Cambridge105/liquidsoap-playout-machine/blob/main/playout.png?raw=true)
+
+## Machine setup
+The following tasks are performed by userdata.txt which should be part of the launch configuration. This runs automatically when the EC2 instance is created.
+1. Installs required packages, including by running *opamstart.sh*  (See the Code Structure section, below)
+2. Clones this repo
+3. Gets the credentials and details of the studio stream from Parameter Store and writes them into the config.py file
+4. Sets up cron jobs, which will, each hour:
+   - copy all today's files from the S3 bucket 
+   - run the join30MinFiles.py and checkFilePresent.py scripts (See the Code Structure section, below)
+   - then run the makeSchedule.py script (See the Code Structure section, below)
+5. Ensures the machine's timezone is set to UK local time, respecting any DST offset
+6. Adds all of Rob's and my public keys from GitHub, in addition to the key specified in the Launch Configuration, so either of us can access the machine - Anyone else using this repo will need to user their own keys instead!
+7. Updates DNS with the machine's public IP
+8. Gets the credentials to access the schedule Google Calendar from the Parameter Store and writes them to files
+9. Runs parseSchedule.py (See the Code Structure section, below)
 
 ## Code structure
 The code is formed of a number of scripts:
@@ -30,3 +45,17 @@ The code is formed of a number of scripts:
  - *parseSchedule.py* - This is run at boot. It connects to Google Calendar to download the schedule, using credentials which are also fetched during boot. It writes *schedule.csv*, which contains recorded programmes scheduled today and tomorrow. This schedule information is used by *checkFilePresent.py*
  - *update-route53-A.json* - This is a template config script used to update DNS with the machine's public IP at boot.
  - *userdata.txt* - This contains the machine setup and configuration and is designed to be used as part of a launch template in AWS. 
+
+Note on timers: Be aware that the hourly jobs created by userdata.txt are cron jobs as they can have best-effort timing. Programmes scheduled by makeSchedule.py use systemctl timers with 100 millisecond accuracy. 
+
+## IAM role policy 
+The EC2 instance created by the Launch Configuration must have an IAM Role attached, with a Policy granting access to the following (obviously restrict the Resources as required):
+- kms:Encrypt (needed because *parseSchedule.py* has to write back the Google Calendar access token as a SecureString to Parameter Store, in case the OAuth Refresh Token has updated)
+- kms:Decrypt (needed to decrypt the SecureStrings from Parameter Store, containing the secrets for Icecast and the Google Calendar credentials)
+- route53:ChangeResourceRecordSets (needed to update DNS with the public IP of the EC2 instance each time it is launched)
+- ssm:GetParameter (needed to get parameter from Parameter Store)
+- ssm:GetParametersByPath
+- ssm:GetParameters
+- ssm:PutParameter (needed to update the OAuth refresh token from Google Calendar's API)
+- s3:GetObject (needed to get the pre recorded files from S3)
+- s3:ListBucket (needed to get the listing of pre-recorded files in case *checkFilePresent.py* needs to find an older edition)
