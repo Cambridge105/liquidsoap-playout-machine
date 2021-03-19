@@ -17,6 +17,8 @@ To run this machine, you will need to configure the following as well as the scr
 - Auto-Scaling group set to a normal minimum/maximum/desired of 0 instances, pointing to the launch configuration
 - Schedule on the Auto-Scaling group, to increase/decrease the ASG desired and minimum sizes when needed (currently done manually, outside the scope of this repo)
 
+![Architecture diagram](https://github.com/Cambridge105/liquidsoap-playout-machine/blob/main/playout.png?raw=true)
+
 ## Code structure
 The code is formed of a number of scripts:
 
