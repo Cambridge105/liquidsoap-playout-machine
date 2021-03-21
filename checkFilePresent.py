@@ -22,7 +22,7 @@ programmes = schedule.splitlines()
 for programme in programmes:
     programInfo = programme.split(",")
     if programInfo[0] == '"' + nextHourISO + '"':
-        fileToCheck = 'home/ubuntu/prerecs/' + programInfo[3].replace('"','')
+        fileToCheck = '/home/ubuntu/prerecs/' + programInfo[3].replace('"','') + '.mp3'
         print(fileToCheck)
  
         if len(fileToCheck) > 1:
