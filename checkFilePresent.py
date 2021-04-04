@@ -12,9 +12,11 @@ f = open("/home/ubuntu/schedule.csv","r")
 schedule = f.read()
 f.close()
 
-timeNow = datetime.datetime.now()
+timeNow = datetime.datetime.now(datetime.timezone.utc).astimezone()
 nextHour = timeNow + datetime.timedelta(hours=1)
-nextHourISO = nextHour.strftime("%Y-%m-%dT%H:00:00Z")
+nextHourISO = nextHour.strftime("%Y-%m-%dT%H:00:00%z")
+if "+0100" in nextHourISO:
+    nextHourISO = nextHourISO.replace("+0100","+01:00") #because you'd think a standard was a standard...
 print("Next hour " + nextHourISO)
 fileToCheck = ''
 
