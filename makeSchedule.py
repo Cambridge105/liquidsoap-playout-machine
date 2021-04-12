@@ -56,7 +56,7 @@ for filename in os.listdir(directory):
                continue		   
 
         # Write the liquidsoap for the file
-        ls = "source = once(single(\"" + filepath + "\"));\ndef cue_meta(m) =\n        [(\"liq_cue_in\",\"0\"),(\"liq_cue_out\",\"" + fadeout_dur + "\")]\nend\nsource = map_metadata(cue_meta,source)\nsource = fade.out(cue_cut(source))"
+        ls = "source = once(single(\"" + filepath + "\"));\ndef cue_meta(m) =\n        [(\"liq_cue_in\",\"0\"),(\"liq_cue_out\",\"" + fadeout_dur + "\")]\nend\nsource = map_metadata(cue_meta,source)\nsource = fade.out(cue_cut(source))\n"
         ls = ls + "output.icecast(%opus(vbr=\"none\",application=\"audio\",bitrate=256,stereo,signal=\"music\"), host=\"" + config.icehost + "\", port=" + config.iceport + ", password=\"" + config.icepass + "\", mount=\"" + config.icemount + "\", fallible=true, on_stop=shutdown, max_duration(" + str(maxdur) + ",source))\n"
         ls = ls + "output.dummy(blank())"
 
