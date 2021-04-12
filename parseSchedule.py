@@ -51,9 +51,9 @@ def main():
     for event in events:
         start = event['start'].get('dateTime', event['start'].get('date'))
         end = event['end'].get('dateTime', event['end'].get('date'))
-        match = re.search(r"PID:([a-z0-9\-]+)",event['description'])
+        match = re.search(r"PID:([A-z0-9\-]+)",event['description'])
         pid = match.group(1)
-        expected_file_name = dateutil.parser.isoparse(start).strftime('%Y%m%d_%H%M') + "_" + pid
+        expected_file_name = dateutil.parser.isoparse(start).strftime('%Y%m%d_%H%M') + "_" + pid.lower()
         if "TYPE:RECORDED" in event['description']:    
             schedule_content = schedule_content + "\"" + start + "\",\"" + end + "\",\"" + pid + "\",\"" + expected_file_name + "\",\"" + event['summary'] + "\"\n"
     
