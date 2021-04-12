@@ -30,18 +30,25 @@ for filename in os.listdir(directory):
         # Set the max_duration to a limited amount
         if filedur < 13000:
            maxdur = 12592.0
+           fadeout_dur = 12592
         if filedur < 11000:
            maxdur = 10725.0
+           fadeout_dur = 10712
         if filedur < 9120:
            maxdur = 8992.0
+           fadeout_dur = 8992
         if filedur < 8000:
            maxdur = 7125.0
+           fadeout_dur = 7112
         if filedur < 6000:
            maxdur = 5392.0
+           fadeout_dur = 5392
         if filedur < 4000:
            maxdur = 3525.0
+           fadeout_dur = 3512
         if filedur < 2000:
            maxdur = 1792.0
+           fadeout_dur = 1792
 
         if filedur < 2000:
            if os.path.isfile(directory + fileyear + filemnth + filedate + "_" + filehour + "00_joined.mp3"):
@@ -49,7 +56,7 @@ for filename in os.listdir(directory):
                continue		   
 
         # Write the liquidsoap for the file
-        ls = "source = once(single(\"" + filepath + "\"))\n"
+        ls = "source = once(single(\"" + filepath + "\"));\ndef cue_meta(m) =\n        [(\"liq_cue_in\",\"0\"),(\"liq_cue_out\",\"" + fadeout_dur + "\")]\nend\nsource = map_metadata(cue_meta,source)\nsource = fade.out(cue_cut(source))"
         ls = ls + "output.icecast(%opus(vbr=\"none\",application=\"audio\",bitrate=256,stereo,signal=\"music\"), host=\"" + config.icehost + "\", port=" + config.iceport + ", password=\"" + config.icepass + "\", mount=\"" + config.icemount + "\", fallible=true, on_stop=shutdown, max_duration(" + str(maxdur) + ",source))\n"
         ls = ls + "output.dummy(blank())"
 
