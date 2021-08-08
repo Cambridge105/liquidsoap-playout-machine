@@ -23,10 +23,10 @@ sudo ln -s /usr/share/zoneinfo/Europe/London /etc/localtime
 /bin/bash /home/ubuntu/liquidsoap-playout-machine/opamstart.sh
 /bin/bash /home/ubuntu/liquidsoap-playout-machine/makeConfig.sh
 TODAY=$(date +%Y%m%d)
-echo '48 6-22 * * * aws s3 sync s3://cambridge105-co-uk-prerecs /home/ubuntu/prerecs --exclude "*.mp3" --include "'$TODAY'*"' > /tmp/mycrontab
-echo '50 6-22 * * * /usr/bin/python3 /home/ubuntu/liquidsoap-playout-machine/join30MinFiles.py' >> /tmp/mycrontab
-echo '52 6-22 * * * /usr/bin/python3 /home/ubuntu/liquidsoap-playout-machine/checkFilePresent.py' >> /tmp/mycrontab
-echo '53 6-22 * * * /usr/bin/python3 /home/ubuntu/liquidsoap-playout-machine/makeSchedule.py' >> /tmp/mycrontab
+echo '48 * * * * /usr/bin/aws s3 sync s3://cambridge105-co-uk-prerecs /home/ubuntu/prerecs --delete' > /tmp/mycrontab
+echo '50 * * * * /usr/bin/python3 /home/ubuntu/liquidsoap-playout-machine/join30MinFiles.py' >> /tmp/mycrontab
+echo '52 * * * * /usr/bin/python3 /home/ubuntu/liquidsoap-playout-machine/checkFilePresent.py' >> /tmp/mycrontab
+echo '53 * * * * /usr/bin/python3 /home/ubuntu/liquidsoap-playout-machine/makeSchedule.py' >> /tmp/mycrontab
 crontab -u ubuntu /tmp/mycrontab
 wget https://github.com/dnas2.keys -O ->> /home/ubuntu/.ssh/authorized_keys
 wget https://github.com/rmc47.keys -O ->> /home/ubuntu/.ssh/authorized_keys
