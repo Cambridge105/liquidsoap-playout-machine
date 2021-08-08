@@ -22,7 +22,6 @@ sudo rm /etc/localtime
 sudo ln -s /usr/share/zoneinfo/Europe/London /etc/localtime
 /bin/bash /home/ubuntu/liquidsoap-playout-machine/opamstart.sh
 /bin/bash /home/ubuntu/liquidsoap-playout-machine/makeConfig.sh
-TODAY=$(date +%Y%m%d)
 # Clear out any old LS files - both historical and where the future schedule may have changed PID for a slot
 # Only do this once a day when we aren't live in case deleting a file that's currently playing upsets LS
 echo '40 4 * * * /bin/rm /home/ubuntu/prerecs/*.liq' > /tmp/mycrontab
