@@ -10,5 +10,5 @@ TIME_PREFIX=$(date +"%Y%m%d_%H00")
 PLAYOUT_TARGET=$(ls /home/ubuntu/prerecs/$TIME_PREFIX*.liq | head -n 1)
 # If there is one, play it!
 if [ -f $PLAYOUT_TARGET ]; then
-	$PLAYOUT_TARGET
+	/home/ubuntu/.opam/default/bin/liquidsoap $PLAYOUT_TARGET
 fi
