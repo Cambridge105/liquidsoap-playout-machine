@@ -41,6 +41,6 @@ python3 /home/ubuntu/liquidsoap-playout-machine/parseSchedule.py
 sudo chown ubuntu:ubuntu /home/ubuntu/schedule.csv
 sudo cp /home/ubuntu/liquidsoap-playout-machine/liquidsoap-playout.service /etc/systemd/system/
 sudo cp /home/ubuntu/liquidsoap-playout-machine/liquidsoap-playout.timer /etc/systemd/system/
-sydo systemctl daemon-reload
+sudo systemctl daemon-reload
 sudo systemctl enable liquidsoap-playout.timer
 sudo systemctl start liquidsoap-playout.timer
