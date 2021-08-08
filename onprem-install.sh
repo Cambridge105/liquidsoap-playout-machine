@@ -1,4 +1,9 @@
 #!/bin/bash
+set -e
+if ! sudo -n true; then
+	echo "Cannot run sudo without password"
+	exit 1
+fi
 sudo apt-get update
 sudo apt-get upgrade -y
 sudo apt install awscli -y
