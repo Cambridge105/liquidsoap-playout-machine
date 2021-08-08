@@ -23,6 +23,7 @@ sudo ln -s /usr/share/zoneinfo/Europe/London /etc/localtime
 /bin/bash /home/ubuntu/liquidsoap-playout-machine/opamstart.sh
 /bin/bash /home/ubuntu/liquidsoap-playout-machine/makeConfig.sh
 TODAY=$(date +%Y%m%d)
+echo '45 * * * * /usr/bin/python3 /home/ubuntu/liquidsoap-playout-machine/parseSchedule.py' > /tmp/mycrontab
 echo '48 * * * * /usr/bin/aws s3 sync s3://cambridge105-co-uk-prerecs /home/ubuntu/prerecs --delete' > /tmp/mycrontab
 echo '50 * * * * /usr/bin/python3 /home/ubuntu/liquidsoap-playout-machine/join30MinFiles.py' >> /tmp/mycrontab
 echo '52 * * * * /usr/bin/python3 /home/ubuntu/liquidsoap-playout-machine/checkFilePresent.py' >> /tmp/mycrontab
