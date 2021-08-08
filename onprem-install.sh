@@ -23,8 +23,11 @@ sudo ln -s /usr/share/zoneinfo/Europe/London /etc/localtime
 /bin/bash /home/ubuntu/liquidsoap-playout-machine/opamstart.sh
 /bin/bash /home/ubuntu/liquidsoap-playout-machine/makeConfig.sh
 TODAY=$(date +%Y%m%d)
-echo '45 * * * * /usr/bin/python3 /home/ubuntu/liquidsoap-playout-machine/parseSchedule.py' > /tmp/mycrontab
-echo '48 * * * * /usr/bin/aws s3 sync s3://cambridge105-co-uk-prerecs /home/ubuntu/prerecs --delete' > /tmp/mycrontab
+# Clear out any old LS files - both historical and where the future schedule may have changed PID for a slot
+# Only do this once a day when we aren't live in case deleting a file that's currently playing upsets LS
+echo '40 4 * * * /bin/rm /home/ubuntu/prerecs/*.liq' > /tmp/mycrontab
+echo '45 * * * * /usr/bin/python3 /home/ubuntu/liquidsoap-playout-machine/parseSchedule.py' >> /tmp/mycrontab
+echo '48 * * * * /usr/bin/aws s3 sync s3://cambridge105-co-uk-prerecs /home/ubuntu/prerecs --include "*.mp3" --exclude "*.liq" --delete' >> /tmp/mycrontab
 echo '50 * * * * /usr/bin/python3 /home/ubuntu/liquidsoap-playout-machine/join30MinFiles.py' >> /tmp/mycrontab
 echo '52 * * * * /usr/bin/python3 /home/ubuntu/liquidsoap-playout-machine/checkFilePresent.py' >> /tmp/mycrontab
 echo '53 * * * * /usr/bin/python3 /home/ubuntu/liquidsoap-playout-machine/makeSchedule.py' >> /tmp/mycrontab
