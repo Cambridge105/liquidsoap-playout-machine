@@ -20,8 +20,8 @@ cd /home/ubuntu/prerecs
 sudo chown -R ubuntu:ubuntu /home/ubuntu/
 sudo rm /etc/localtime
 sudo ln -s /usr/share/zoneinfo/Europe/London /etc/localtime
-/bin/su -c "/bin/bash /home/ubuntu/liquidsoap-playout-machine/opamstart.sh" - ubuntu
-/bin/su -c "/bin/bash /home/ubuntu/liquidsoap-playout-machine/makeConfig.sh" - ubuntu
+/bin/bash /home/ubuntu/liquidsoap-playout-machine/opamstart.sh
+/bin/bash /home/ubuntu/liquidsoap-playout-machine/makeConfig.sh
 TODAY=$(date +%Y%m%d)
 echo '48 6-22 * * * aws s3 sync s3://cambridge105-co-uk-prerecs /home/ubuntu/prerecs --exclude "*.mp3" --include "'$TODAY'*"' > /tmp/mycrontab
 echo '50 6-22 * * * /usr/bin/python3 /home/ubuntu/liquidsoap-playout-machine/join30MinFiles.py' >> /tmp/mycrontab
