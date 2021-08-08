@@ -1,0 +1,8 @@
+[Unit]
+Description=Liquidsoap pre-rec playout
+
+[Service]
+Type=exec
+ExecStart=/bin/bash /home/ubuntu/liquidsoap-playout-machine/liquidsoap-playout.sh
+User=ubuntu
+Group=ubuntu
