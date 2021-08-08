@@ -4,5 +4,4 @@ Description=Liquidsoap pre-rec playout
 [Service]
 Type=simple
 ExecStart=/bin/bash /home/ubuntu/liquidsoap-playout-machine/liquidsoap-playout.sh
-User=ubuntu
-Group=ubuntu
+# Note: we're going to run this service as root, but it'll systemd-run liquidsoap as ubuntu
