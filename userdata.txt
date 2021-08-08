@@ -37,3 +37,7 @@ aws ssm get-parameters --region "eu-west-1" --names "/c105-icecast/gcal-credenti
 aws ssm get-parameters --region "eu-west-1" --names "/c105-icecast/gcal-token" --with-decryption --output text  --query "Parameters[*].{Value:Value}" > /home/ubuntu/liquidsoap-playout-machine/token.json
 python3 /home/ubuntu/liquidsoap-playout-machine/parseSchedule.py
 sudo chown ubuntu:ubuntu /home/ubuntu/schedule.csv
+sudo cp /home/ubuntu/liquidsoap-playout-machine/liquidsoap-playout.service /etc/systemd/system/
+sudo cp /home/ubuntu/liquidsoap-playout-machine/liquidsoap-playout.timer /etc/systemd/system/
+sudo systemctl enable liquidsoap-playout.timer
+sudo systemctl start liquidsoap-playout.timer
