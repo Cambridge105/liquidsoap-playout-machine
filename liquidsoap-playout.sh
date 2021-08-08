@@ -9,7 +9,7 @@ TIME_PREFIX=$(date +"%Y%m%d_%H00")
 # has been uploaded
 PLAYOUT_TARGET=$(ls /home/ubuntu/prerecs/$TIME_PREFIX*.liq | head -n 1)
 # If there is one, play it!
-if [ -f $PLAYOUT_TARGET ]; then
+if [ -f "$PLAYOUT_TARGET" ]; then
 	# Run the long-running task asynchronously, so this service isn't considered
 	# still running when the timer next goes off - or it gets queued up
 	# for when liquidsoap does exit
