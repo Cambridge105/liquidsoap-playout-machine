@@ -66,25 +66,6 @@ for filename in os.listdir(directory):
         st = os.stat("/home/ubuntu/prerecs/" + filename + ".liq")
         os.chmod("/home/ubuntu/prerecs/" + filename + ".liq", st.st_mode | stat.S_IEXEC)
 
-        systemd_timer = "[Unit]\nDescription=Playout for " + filename + "\n\n[Timer]\nOnCalendar=" + fileyear + "-" + filemnth + "-" + filedate + " " + filehour + ":" + filemins + ":00\nPersistent=false\nAccuracySec=100ms\n\n[Install]\nWantedBy=timers.target"
-        systemd_timer_file = open("/home/ubuntu/playout" + filedate + filehour + filemins + ".timer", "w")
-        systemd_timer_file.write(systemd_timer)
-        systemd_timer_file.close()
-        os.system("sudo mv /home/ubuntu/playout" + filedate + filehour + filemins + ".timer /etc/systemd/system/playout" + filedate + filehour + filemins + ".timer")
-        
-        command1 = "/usr/bin/bash /home/ubuntu/.bash_profile"
-        command2 = "/home/ubuntu/.opam/default/bin/liquidsoap /home/ubuntu/prerecs/" + filename + ".liq"
-        systemd_service = "[Unit]\nDescription=Playout for " + filename + "\n\n[Service]\nType=oneshot\nExecStart=" + command1 + "\nExecStart=" + command2 + "\nUser=ubuntu\nGroup=ubuntu"
-        systemd_service_file = open("/home/ubuntu/playout" + filedate + filehour + filemins + ".service", "w")
-        systemd_service_file.write(systemd_service)
-        systemd_service_file.close()
-        os.system("sudo mv /home/ubuntu/playout" + filedate + filehour + filemins + ".service /etc/systemd/system/playout" + filedate + filehour + filemins + ".service")
-        
-        
-        os.system("sudo systemctl daemon-reload")
-        os.system("sudo systemctl start playout" + filedate + filehour + filemins + ".timer")
-
-
         continue
     else:
         continue

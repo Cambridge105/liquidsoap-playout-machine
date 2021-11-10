@@ -1,0 +1,10 @@
+[Unit]
+Description=Liquidsoap pre-rec playout
+
+[Timer]
+OnCalendar=*-*-* *:00:00
+Persistent=false
+AccuracySec=100ms
+
+[Install]
+WantedBy=timers.target
