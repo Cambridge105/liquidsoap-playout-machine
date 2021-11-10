@@ -17,6 +17,8 @@ nextHour = timeNow + datetime.timedelta(hours=1)
 nextHourISO = nextHour.strftime("%Y-%m-%dT%H:00:00%z")
 if "+0100" in nextHourISO:
     nextHourISO = nextHourISO.replace("+0100","+01:00") #because you'd think a standard was a standard...
+elif "+0000" in nextHourISO:
+    nextHourISO = nextHourISO.replace("+0000", "Z")
 print("Next hour " + nextHourISO)
 fileToCheck = ''
 
