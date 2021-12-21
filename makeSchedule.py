@@ -21,9 +21,9 @@ for filename in os.listdir(directory):
         cronexp = filemins + " " + filehour + " " + filedate + " " + filemnth + " * "
 
         # What is the file duration?
-        filedur_cmd = 'mp3info -p "%S" ' + filepath + ' > duration.txt'
+        filedur_cmd = 'mp3info -p "%S" ' + filepath + ' > /tmp/duration.txt'
         os.system(filedur_cmd)
-        f = open("duration.txt", "r")
+        f = open("/tmp/duration.txt", "r")
         filedur = f.read()
         filedur = float(filedur)
 
