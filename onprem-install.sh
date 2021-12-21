@@ -85,6 +85,9 @@ wget https://github.com/rmc47.keys -O ->> /home/ubuntu/.ssh/authorized_keys
 pip3 install --upgrade google-api-python-client google-auth-httplib2 google-auth-oauthlib boto3
 pip3 install --upgrade awscli
 
+# Limit how many S3 transfers to do in parallel, to avoid swamping the internet connection
+aws configure set default.s3.max_concurrent_request 1
+
 # Grab the Google calendar credentials
 aws ssm get-parameters --region "eu-west-1" --names "/c105-icecast/gcal-credentials" --output text  --query "Parameters[*].{Value:Value}" > /home/ubuntu/liquidsoap-playout-machine/credentials.json
 aws ssm get-parameters --region "eu-west-1" --names "/c105-icecast/gcal-token" --with-decryption --output text  --query "Parameters[*].{Value:Value}" > /home/ubuntu/liquidsoap-playout-machine/token.json
