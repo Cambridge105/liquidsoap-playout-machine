@@ -17,9 +17,9 @@ for filename in os.listdir(directory):
           continue
         
         # What is the file duration?
-        filedur_cmd = 'mp3info -p "%S" ' + filepath + ' > duration.txt'
+        filedur_cmd = 'mp3info -p "%S" ' + filepath + ' > /tmp/duration.txt'
         os.system(filedur_cmd)
-        f = open("duration.txt", "r")
+        f = open("/tmp/duration.txt", "r")
         filedur = f.read()
         filedur = float(filedur)
 
@@ -35,9 +35,9 @@ for filename in os.listdir(directory):
         for testfile in os.listdir(directory):
             if target_file in testfile and testfile.endswith(".mp3"):
                 secondfile = directory + testfile
-                secondfiledur_cmd = 'mp3info -p "%S" ' + secondfile + ' > duration.txt'
+                secondfiledur_cmd = 'mp3info -p "%S" ' + secondfile + ' > /tmp/duration.txt'
                 os.system(secondfiledur_cmd)
-                f = open("duration.txt", "r")
+                f = open("/tmp/duration.txt", "r")
                 filedur = f.read()
                 filedur = float(filedur)
                 if filedur > 2000:
