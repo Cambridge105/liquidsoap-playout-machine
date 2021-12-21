@@ -8,7 +8,7 @@ sudo apt-get update
 sudo apt-get upgrade -y
 sudo apt install awscli -y
 mkdir /home/ubuntu/prerecs/
-sudo apt-get install build-essential -y
+sudo apt-get install build-essential software-properties-common -y
 sudo add-apt-repository ppa:avsm/ppa -y
 sudo apt install opam -y
 cd /home/ubuntu/
