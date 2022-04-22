@@ -42,7 +42,7 @@ def main():
     tomorrowEnd = timeNowUTC + datetime.timedelta(days=1)
     tomorrowEnd = tomorrowEnd.replace(hour=23,minute=59, second=59).isoformat() + 'Z'
     events = []
-    events_result = service.events().list(calendarId='u61evjfscniu614cra1mt85r14@group.calendar.google.com', timeMin=todayStart, timeMax=tomorrowEnd, singleEvents=True, orderBy='startTime').execute()
+    events_result = service.events().list(calendarId='sl59avr5acopn7vobg1uuvhem0@group.calendar.google.com', timeMin=todayStart, timeMax=tomorrowEnd, singleEvents=True, orderBy='startTime').execute()
     events = events_result.get('items', [])
     schedule_content = ""
 
