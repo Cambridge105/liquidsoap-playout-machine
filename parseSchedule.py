@@ -52,10 +52,13 @@ def main():
         start = event['start'].get('dateTime', event['start'].get('date'))
         end = event['end'].get('dateTime', event['end'].get('date'))
         match = re.search(r"PID:([A-z0-9\-]+)",event['description'])
-        pid = match.group(1)
-        expected_file_name = dateutil.parser.isoparse(start).strftime('%Y%m%d_%H%M') + "_" + pid.lower()
-        if "TYPE:RECORDED" in event['description']:    
-            schedule_content = schedule_content + "\"" + start + "\",\"" + end + "\",\"" + pid + "\",\"" + expected_file_name + "\",\"" + event['summary'] + "\"\n"
+        if not match:
+            print('No PID for event ', event['summary'])
+        else:
+            pid = match.group(1)
+            expected_file_name = dateutil.parser.isoparse(start).strftime('%Y%m%d_%H%M') + "_" + pid.lower()
+            if "TYPE:RECORDED" in event['description']:    
+                schedule_content = schedule_content + "\"" + start + "\",\"" + end + "\",\"" + pid + "\",\"" + expected_file_name + "\",\"" + event['summary'] + "\"\n"
     
     cron = open("/home/ubuntu/schedule.csv","w")
     cron.write(schedule_content)
